@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MoveData>
+  <dataName>Move_Slash</dataName>
+  <Name>Slash</Name>
+  <Essence>Body</Essence>
+  <Focus>Enemy</Focus>
+  <Stat>Power</Stat>
+  <MoveType>BasicDamage</MoveType>
+  <MoveProps>
+    <BaseDamage>5.0</BaseDamage>
+    <DamageEssence>Death</DamageEssence>
+  </MoveProps>
+</MoveData>
