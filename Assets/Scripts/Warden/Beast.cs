@@ -35,6 +35,8 @@ namespace Warden
 				entry => entry.Value.Instantiate()
 				);
 			LevelUp(level);
+			MoveSet = new List<MoveData>();
+			MoveSet.Add(KnownMoves.First());
 		}
 
 		public MoveType InstantiateKnownMove(MoveData move)

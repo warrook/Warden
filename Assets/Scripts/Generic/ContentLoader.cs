@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using UnityEngine;
+using Warden;
 
 namespace Generic
 {
@@ -29,7 +30,8 @@ namespace Generic
 				Packs.Add(new ContentPack(dir));
 			}
 			Debug.LogWarningFormat("All entries in the database: ");
-			Database<Warden.BeastData>.LogAll();
+			//Database<Warden.BeastData>.LogAll();
+			Constants.Player.SetDefault();
 		}
 	}
 }

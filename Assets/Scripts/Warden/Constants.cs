@@ -44,6 +44,8 @@ namespace Warden
 			{ "Grade_F", 1.0f }
 		};
 
+		public static Player Player = new Player();
+
 		public static bool Validate(string value)
 		{
 			List<string> collection = GetCollection(value);

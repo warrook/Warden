@@ -129,7 +129,7 @@ namespace Generic
 			{
 				try
 				{
-					data.LearnSet.Add(int.Parse(GetContent(node, "level")), GetContent(node, "dataName"));
+					data.LearnSet.Add(int.Parse(GetContent(node, "level")), currentPack + "." + GetContent(node, "dataName"));
 				}
 				catch (ArgumentException e)
 				{

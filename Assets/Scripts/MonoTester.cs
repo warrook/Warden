@@ -8,12 +8,15 @@ using Generic;
 public class MonoTester : MonoBehaviour
 {
 	private ContentPack pack;
+	private BattleController controller;
     // Start is called before the first frame update
     void Start()
     {
 		//pack = new ContentPack(new DirectoryInfo(Path.Combine(FileLocation.ContentDir.FullName, "Core" + Path.DirectorySeparatorChar)), "Core");
 		ContentLoader.Log();
 		ContentLoader.LoadPacks();
+
+		controller = new BattleController();
 		//pack.LoadData();
 
 		//Beast wisp = new Beast(Database<BeastData>.GetByName("WillOWisp"), 10);
