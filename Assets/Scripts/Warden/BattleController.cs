@@ -13,48 +13,39 @@ namespace Warden
 	/// </summary>
 	public class BattleController
 	{
-		public enum Choice
-		{
-			Busy, //Other things are working, so don't display anything
-			Start, //Fight/Bag/etc hasn't been chosen yet
-			Fight,
-			Team,
-			Spells
-		}
+		private BattlePhase battlePhaseInternal;
+		public BattlePhase BattlePhase => battlePhaseInternal;
 
-		public enum BattleState
-		{
-
-		}
-
-		public Choice State;
 		private BattleInfo battleInfo;
 		private UIBattleBuilder ui;
+		private List<Beast> Participants;
 
 		private List<MoveType> activeMoves = new List<MoveType>(); //Active MoveType objects going on.
 		private List<MoveType> waitingMoves = new List<MoveType>(); //MoveType objects that have been selected and are waiting to be added to Active on the next phase
 		private List<MoveType> endingMoves = new List<MoveType>(); //MoveType objects that are done, need to call OnEnd(), and be deleted
 
 		public BattleInfo BattleInfo => battleInfo;
-		public List<Beast> OpponentTeam => BattleInfo.OpponentTeam;
+		//public List<Beast> OpponentTeam => BattleInfo.OpponentTeam;
 		//public List<IBeastOwner> Owners = new List<IBeastOwner>();
 
 		public BattleController()
 		{
-			List<Beast> list = new List<Beast>()
-			{
-				new Beast(Generic.Database<BeastData>.GetByName("Warden.WillOWisp"), 5)
-			};
-			battleInfo = new BattleInfo(list);
+			//List<Beast> list = new List<Beast>()
+			//{
+			//	new Beast(Generic.Database<BeastData>.GetByName("Warden.WillOWisp"), 5)
+			//};
+			var team = new Team()
+				.AddByName("Warden.Wisp", 5)
+				.AddByName("Warden.FoolsFlame", 6);
+			battleInfo = new BattleInfo(team);
 			ui = new UIBattleBuilder(this);
-			State = Choice.Start;
+			battlePhaseInternal = BattlePhase.BattleStart;
 		}
 
 		public BattleController(BattleInfo info)
 		{
 			battleInfo = info;
 			ui = new UIBattleBuilder(this);
-			State = Choice.Start;
 		}
 
 		//Move done moves to the ending list
@@ -62,7 +53,7 @@ namespace Warden
 		{
 			foreach (MoveType move in activeMoves)
 			{
-				if (move.Flag == -1)
+				if (move.State == MoveState.Finished)
 				{
 					activeMoves.Remove(move);
 					endingMoves.Add(move);

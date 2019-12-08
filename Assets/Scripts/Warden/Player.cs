@@ -9,18 +9,20 @@ namespace Warden
 {
 	public class Player : IBeastOwner
 	{
-		private List<Beast> Team;
+		//private List<Beast> Team;
 
-		public List<Beast> GetTeam() => Team;
-		public List<MoveData> GetPrimaryMoveSet() => GetTeam().First().MoveSet;
+		//public List<Beast> GetTeam() => Team;
+		//public List<MoveData> GetPrimaryMoveSet() => GetTeam().First().MoveSet;
+
+		private Team Team;
+		public Team GetTeam() => Team;
+		public List<MoveData> GetPrimaryMoveSet() => GetTeam().Members.First().MoveSet;
 
 		public Player SetDefault()
 		{
-			//UnityEngine.Debug.LogWarning("Initializing player team");
-			Team = new List<Beast>()
-			{
-				new Beast(Database<BeastData>.GetByName("Warden.WillOWisp"), 10)
-			};
+			Team = new Team()
+				.AddByName("Warden.Mote", 5)
+				.AddByName("Warden.Mote", 2);
 			return this;
 		}
 	}

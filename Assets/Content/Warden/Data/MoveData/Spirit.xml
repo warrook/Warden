@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Data>
+  <MoveData>
+    <dataName>Chill</dataName>
+    <Name>Chill</Name>
+    <Essence>Spirit</Essence>
+    <Focus>Enemy</Focus>
+    <Stat>Power</Stat>
+    <MoveType>BasicDamage</MoveType>
+    <MoveProps>
+      <BaseDamage>6.0</BaseDamage>
+    </MoveProps>
+  </MoveData>
+
+  <MoveData>
+    <dataName>Haunt</dataName>
+    <Name>Haunt</Name>
+    <Essence>Spirit</Essence>
+    <Focus>Enemy</Focus>
+    <Stat>Power</Stat>
+    <MoveType>BasicDamage</MoveType>
+    <MoveProps>
+      <BaseDamage>3.0</BaseDamage>
+    </MoveProps>
+  </MoveData>
+</Data>

@@ -48,17 +48,23 @@ namespace Generic
 					reader.Close();
 				}
 
-				XmlNode root = document.DocumentElement;
-				switch (root.Name)
+				//TODO: Need to allow for multiple things in one file
+				//Escape apostrophes and quotes
+				if (document.DocumentElement.Name != "Data")
+					continue;
+				foreach (XmlNode node in document.DocumentElement.ChildNodes)
 				{
-					case "MoveData":
-						ReadMoveData(root);
-						break;
-					case "BeastData":
-						ReadBeastData(root);
-						break;
-					case "AbilityData": //Probably not 'ability' -- 'aura' or 'skill' or 'passive'
-						break;
+					switch (node.Name)
+					{
+						case "MoveData":
+							ReadMoveData(node);
+							break;
+						case "BeastData":
+							ReadBeastData(node);
+							break;
+						case "AbilityData": //Probably not 'ability' -- 'aura' or 'skill' or 'passive'
+							break;
+					}
 				}
 			}
 		}
@@ -88,11 +94,11 @@ namespace Generic
 			Database<MoveData>.Add(data);
 		}
 
-		private static void MakeMove(MoveData data)
-		{
-			MoveType move = (MoveType)Activator.CreateInstance(Type.GetType(data.MoveType), data);
-			move.OnUse();
-		}
+		//private static void MakeMove(MoveData data)
+		//{
+		//	MoveType move = (MoveType)Activator.CreateInstance(Type.GetType(data.MoveType), data);
+		//	move.OnUse();
+		//}
 
 		private static void ReadBeastData(XmlNode root)
 		{
@@ -124,11 +130,13 @@ namespace Generic
 			}
 
 			//LearnSet
+			//TODO: allow support for inheriting from previous xmute stages (which is a WHOLE OTHER BEAST)
 			data.LearnSet = new SortedDictionary<int, string>();
 			foreach (XmlNode node in root["LearnSet"].ChildNodes)
 			{
 				try
 				{
+					//TODO: Allow specifying in the XML what namespace to use
 					data.LearnSet.Add(int.Parse(GetContent(node, "level")), currentPack + "." + GetContent(node, "dataName"));
 				}
 				catch (ArgumentException e)

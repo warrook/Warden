@@ -11,22 +11,34 @@ namespace Warden
 {
 	public class BattleTicker : MonoBehaviour
 	{
+		private bool forceUpdate = false;
 		public UIBattleBuilder builder;
 		private BattleController controller => builder.Controller;
-		private BattleController.Choice choice;
+		private BattleMenu currentMenu;
+
+		public void ForceUpdate()
+		{
+			forceUpdate = true;
+		}
 
 		private void Start()
 		{
-			choice = controller.State;
-			builder.Build();
+			currentMenu = builder.Menu;
 		}
 
 		private void Update()
 		{
-			if (choice != builder.Controller.State)
+			if (controller.BattlePhase == BattlePhase.Waiting)
 			{
-				choice = controller.State;
-				builder.Build();
+				if (builder.Menu == BattleMenu.Busy)
+				{
+					//Don't do any menu thing.
+				}
+				else if (currentMenu != builder.Menu || forceUpdate)
+				{
+					currentMenu = builder.Menu;
+					builder.BuildMenu();
+				}
 			}
 		}
 	}

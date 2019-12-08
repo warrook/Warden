@@ -8,7 +8,7 @@ namespace Warden
 {
 	public interface IBeastOwner
 	{
-		List<Beast> GetTeam();
+		Team GetTeam();
 		List<MoveData> GetPrimaryMoveSet();
 	}
 }

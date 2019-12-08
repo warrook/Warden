@@ -12,12 +12,14 @@ namespace Generic.UI
 {
 	public class UIBattleBuilder
 	{
+		public BattleMenu Menu = BattleMenu.Start;
+
 		private BattleController controller;
 		public BattleController Controller => controller;
 
 		private GameObject OverlayObject;
 		private GameObject ChoiceContainer;
-		private GameObject Ticker;
+		private BattleTicker Ticker;
 		private GameObject prefabButton;
 		private Canvas canvas;
 
@@ -41,48 +43,57 @@ namespace Generic.UI
 			ChoiceContainer = new GameObject("UI_ChoiceContainer");
 			ChoiceContainer.transform.SetParent(OverlayObject.transform);
 
-			Ticker = new GameObject("Ticker");
-			Ticker.transform.SetParent(OverlayObject.transform);
-			Ticker.AddComponent<BattleTicker>().builder = this;
-
-			//Build();
+			Ticker = OverlayObject.AddComponent<BattleTicker>();
+			Ticker.builder = this;
 		}
 
-		public void Build()
+		public void BuildMenu()
 		{
 			ClearChoiceContainer();
-
-			BattleController.Choice choice = Controller.State;
-			switch (choice)
+			
+			switch (Menu)
 			{
-				case BattleController.Choice.Start:
-					BuildStart();
+				case BattleMenu.Start:
+					BuildMenuStart();
 					break;
-				case BattleController.Choice.Fight:
-					BuildFight();
+				case BattleMenu.Fight:
+					BuildMenuFight();
+					break;
+				case BattleMenu.Team:
+					BuildMenuTeam();
 					break;
 				default:
 					break;
 			}
 		}
 
-		private void BuildStart()
+		private void BuildMenuStart()
 		{
 			int i = 0;
 			MakeButton(new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i), "Fight", "UI/BattleChoice_Fight", () =>
 			{
-				Controller.State = BattleController.Choice.Fight;
-			}).transform.SetParent(ChoiceContainer.transform);
+				Menu = BattleMenu.Fight;
+			});
 
 			i++;
 
 			MakeButton(new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i), "Spells", "UI/BattleChoice_Run", () =>
 			{
-				Controller.State = BattleController.Choice.Spells;
-			}).transform.SetParent(ChoiceContainer.transform);
+				Menu = BattleMenu.Spells;
+			});
+
+			i++;
+
+			MakeButton(new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i), "Team", "UI/BattleChoice_Run", () =>
+			{
+				Menu = BattleMenu.Team;
+			});
 		}
 
-		private void BuildFight()
+		/// <summary>
+		/// Get moves from the beast at the front
+		/// </summary>
+		private void BuildMenuFight()
 		{
 			int i = 0;
 			foreach (MoveData move in Constants.Player.GetPrimaryMoveSet())
@@ -95,35 +106,36 @@ namespace Generic.UI
 				});
 				i++;
 			}
+		}
 
-			//Debug.Log(string.Join(",", Constants.Player.GetTeam().First().MoveSet));
-			//for (int i = 0; i < Constants.Player.GetPrimaryMoveSet().Count; i++)
-			//{
-			//	List<MoveData> moves = Constants.Player.GetPrimaryMoveSet();
-			//	Vector3 pos = new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i);
-			//	MakeButton(pos, moves[i].Name, "UI/BattleChoice_Fight", () =>
-			//	{
-			//		Debug.Log("Hello there, I am " + moves[i].dataName);
-			//	});
-			//}
+		/// <summary>
+		/// Team switching, stat-viewing
+		/// </summary>
+		private void BuildMenuTeam()
+		{
+			int i = 0;
+			foreach (Beast beast in Constants.Player.GetTeam().Members)
+			{
+				Vector3 pos = new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i);
+				MakeButton(pos, beast.Name + " - " + beast.Level, "UI/BattleChoice_Run", () =>
+				{
+					Debug.Log(beast.Name + ": I have been picked!");
+					Constants.Player.GetTeam().MoveToFront(beast);
+					Menu = BattleMenu.Start;
+				});
+
+				i++;
+			}
 		}
 
 		private GameObject MakeButton(Vector3 position, string title, string texturePath, Action onChoose)
 		{
-			GameObject button = GameObject.Instantiate(prefabButton, position, Quaternion.identity, OverlayObject.transform);
+			GameObject button = GameObject.Instantiate(prefabButton, position, Quaternion.identity, ChoiceContainer.transform);
 			button.name = prefabButton.name + "_" + title;
 			button.transform.Find("Title").gameObject.GetComponent<Text>().text = title;
 			button.transform.Find("Image").gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>(texturePath);
 			button.GetComponent<UIBattleButton>().OnChoose = onChoose;
 			return button;
-		}
-
-		private void ClearChoiceContainer()
-		{
-			for (int i = 0; i < ChoiceContainer.transform.childCount; i++)
-			{
-				GameObject.Destroy(ChoiceContainer.transform.GetChild(i).gameObject);
-			}
 		}
 
 		public void MessageBox(string msg)
@@ -134,6 +146,14 @@ namespace Generic.UI
 			GameObject MessageBox = GameObject.Instantiate(prefab, OverlayObject.transform);
 			TextMeshProUGUI tmp = MessageBox.transform.Find("TextContent").GetComponent<TextMeshProUGUI>();
 			tmp.text = msg;
+		}
+
+		private void ClearChoiceContainer()
+		{
+			for (int i = 0; i < ChoiceContainer.transform.childCount; i++)
+			{
+				GameObject.Destroy(ChoiceContainer.transform.GetChild(i).gameObject);
+			}
 		}
 	}
 }

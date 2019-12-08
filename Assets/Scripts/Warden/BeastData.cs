@@ -14,7 +14,7 @@ namespace Warden
 		public string Description; //Narrative description
 		public List<string> Essences; //1 or 2 essences of the beast
 		public Dictionary<string, Stat> Stats; //Base stat values
-		public SortedDictionary<int, string> LearnSet; //<level, movedata> to learn at levels
+		public SortedDictionary<int, string> LearnSet; //<level, dataName> to learn at levels
 
 		public string ToStringLong()
 		{

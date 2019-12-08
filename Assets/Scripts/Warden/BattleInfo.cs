@@ -11,12 +11,27 @@ namespace Warden
 	/// </summary>
 	public class BattleInfo
 	{
-		public List<Beast> OpponentTeam;
+		//public List<Beast> OpponentTeam;
 		public string Intro; //TODO: Make into dictionary
+
+		public int numPlayerBeasts = 1;
+		public int numAllyBeastsPerTeam = 1;
+		public int numEnemyBeastsPerTeam = 1;
+
+		public List<Team> EnemyTeams;
+		public List<Team> AllyTeams;
 
 		public BattleInfo(List<Beast> beasts)
 		{
-			OpponentTeam = beasts;
+			Intro = "Fight me";
+		}
+
+		public BattleInfo(Team enemies)
+		{
+			EnemyTeams = new List<Team>
+			{
+				enemies
+			};
 			Intro = "Fight me";
 		}
 	}

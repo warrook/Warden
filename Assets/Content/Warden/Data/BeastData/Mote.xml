@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Data>
+  <BeastData>
+    <dataName>Mote</dataName>
+    <Name>Mote</Name>
+    <Description>A glowing speck. Attracted to life.</Description>
+    <Essences>
+      <li>Spirit</li>
+    </Essences>
+    <Stats>
+      <Power>
+        <Base>4</Base>
+        <Grade>C</Grade>
+      </Power>
+      <Defense>
+        <Base>2</Base>
+        <Grade>D</Grade>
+      </Defense>
+      <Vitality>
+        <Base>3</Base>
+        <Grade>C</Grade>
+      </Vitality>
+    </Stats>
+    <LearnSet>
+      <li>
+        <level>1</level>
+        <dataName>Chill</dataName>
+      </li>
+      <li>
+        <level>3</level>
+        <dataName>Haunt</dataName>
+      </li>
+    </LearnSet>
+  </BeastData>
+
+  <BeastData>
+    <dataName>Wisp</dataName>
+    <Name>Wisp</Name>
+    <Description>A distant torchlight, luring travelers to their doom.</Description>
+    <Essences>
+      <li>Spirit</li>
+    </Essences>
+    <Stats>
+      <Power>
+        <Base>5</Base>
+        <Grade>B</Grade>
+      </Power>
+      <Defense>
+        <Base>2</Base>
+        <Grade>D</Grade>
+      </Defense>
+      <Vitality>
+        <Base>3</Base>
+        <Grade>C</Grade>
+      </Vitality>
+    </Stats>
+    <LearnSet inherit="true">
+      <li>
+        <level>1</level>
+        <dataName>Chill</dataName>
+      </li>
+      <li>
+        <level>3</level>
+        <dataName>Haunt</dataName>
+      </li>
+    </LearnSet>
+  </BeastData>
+
+  <BeastData>
+    <dataName>FoolsFlame</dataName>
+    <Name>Fool's Flame</Name>
+    <Description>A light like a campfire lures the unwary to a quick and wasting death.</Description>
+    <Essences>
+      <li>Spirit</li>
+      <li>Death</li>
+    </Essences>
+    <Stats>
+      <Power>
+        <Base>6</Base>
+        <Grade>A</Grade>
+      </Power>
+      <Defense>
+        <Base>3</Base>
+        <Grade>C</Grade>
+      </Defense>
+      <Vitality>
+        <Base>4</Base>
+        <Grade>B</Grade>
+      </Vitality>
+    </Stats>
+    <LearnSet inherit="true">
+      <li>
+        <level>1</level>
+        <dataName>Chill</dataName>
+      </li>
+      <li>
+        <level>3</level>
+        <dataName>Haunt</dataName>
+      </li>
+    </LearnSet>
+  </BeastData>
+</Data>

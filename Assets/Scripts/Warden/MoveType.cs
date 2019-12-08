@@ -12,9 +12,14 @@ namespace Warden
 	/// </summary>
 	public class MoveType : IComparable
 	{
+		protected MoveState stateInternal;
+		protected Wait waitInternal;
+
 		public MoveData data;
-		protected sbyte flagInternal; //When the Flag is -1, it is done
-		public sbyte Flag => flagInternal;
+
+		public MoveState State => stateInternal;
+		public Wait Wait => waitInternal;
+
 		public float Priority; //The speed stat of the user, modified by the move's actual priority
 
 		//Base variables, used by derived classes for stuff
@@ -34,6 +39,8 @@ namespace Warden
 			Essence = data.Essence;
 			Focus = data.Focus;
 			Stat = data.Stat;
+			stateInternal = MoveState.Selected;
+			waitInternal = Wait.None;
 		}
 
 		public virtual string ExposeData()
@@ -50,7 +57,7 @@ namespace Warden
 		public virtual void OnPre() { }
 
 		//Fires when the move is used.
-		public virtual void OnUse() { flagInternal = 1; }
+		public virtual void OnUse() { }
 
 		//Fires right after the move is used.
 		public virtual void OnPost() { }
