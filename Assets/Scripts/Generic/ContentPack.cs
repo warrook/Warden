@@ -15,6 +15,7 @@ namespace Generic
 		private DirectoryInfo rootDir;
 		private string dataFolder;
 		private string assembliesFolder; //TODO: Load assemblies
+		private string texturesFolder;
 
 		public string Name => name;
 		public string RootDir => rootDir.FullName;
@@ -36,10 +37,18 @@ namespace Generic
 				return assembliesFolder;
 			}
 		}
+		public string TexturesFolder
+		{
+			get
+			{
+				if (texturesFolder == null)
+					texturesFolder = Path.Combine(RootDir, "Textures" + Path.DirectorySeparatorChar);
+				return texturesFolder;
+			}
+		}
 
 		public ContentPack(DirectoryInfo directory)
 		{
-			Debug.Log(directory);
 			rootDir = directory;
 			name = directory.Name;
 
@@ -48,6 +57,7 @@ namespace Generic
 
 		public void LoadData()
 		{
+			Debug.LogFormat("Loading content pack {0} in \\{1}\\", name, rootDir.Name);
 			CustomXmlReader.ReadXml(new DirectoryInfo(DataFolder), this);
 			//Database<Warden.MoveData>.LogAll();
 			//Database<Warden.BeastData>.LogAll();

@@ -30,16 +30,12 @@ namespace Warden
 
 		public BattleController()
 		{
-			//List<Beast> list = new List<Beast>()
-			//{
-			//	new Beast(Generic.Database<BeastData>.GetByName("Warden.WillOWisp"), 5)
-			//};
 			var team = new Team()
 				.AddByName("Warden.Wisp", 5)
 				.AddByName("Warden.FoolsFlame", 6);
 			battleInfo = new BattleInfo(team);
 			ui = new UIBattleBuilder(this);
-			battlePhaseInternal = BattlePhase.BattleStart;
+			battlePhaseInternal = BattlePhase.Waiting;
 		}
 
 		public BattleController(BattleInfo info)

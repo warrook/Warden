@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Generic;
+using UnityEngine;
 
 namespace Warden
 {
@@ -12,6 +13,8 @@ namespace Warden
 	{
 		//Refer to Beast class
 		public string Description; //Narrative description
+		public string ModelClass;
+		public XmlElement ModelProps;
 		public List<string> Essences; //1 or 2 essences of the beast
 		public Dictionary<string, Stat> Stats; //Base stat values
 		public SortedDictionary<int, string> LearnSet; //<level, dataName> to learn at levels

@@ -18,7 +18,7 @@ namespace Generic
 			IgnoreWhitespace = true
 		};
 		//private static DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath, "XML" + Path.DirectorySeparatorChar));
-		private static string currentPack;
+		private static ContentPack currentPack;
 
 		/// <summary>
 		/// Reads all XML files in directory, and adds the entries to the database.
@@ -26,7 +26,7 @@ namespace Generic
 		/// <param name="directory"></param>
 		public static void ReadXml(DirectoryInfo directory, ContentPack pack)
 		{
-			currentPack = pack.Name;
+			currentPack = pack;
 			FileInfo[] files = directory.GetFiles("*.xml", SearchOption.AllDirectories);
 			foreach (FileInfo file in files)
 			{
@@ -52,8 +52,12 @@ namespace Generic
 				//Escape apostrophes and quotes
 				if (document.DocumentElement.Name != "Data")
 					continue;
+
+				
 				foreach (XmlNode node in document.DocumentElement.ChildNodes)
 				{
+					Debug.LogFormat("Reading {2} ['{0}'] in file {1}", node["dataName"].InnerText, file.Name, node.Name);
+
 					switch (node.Name)
 					{
 						case "MoveData":
@@ -73,24 +77,15 @@ namespace Generic
 		{
 			MoveData data = new MoveData
 			{
-				dataName = currentPack + "." + GetContent(root, "dataName"),
+				dataName = currentPack.Name + "." + GetContent(root, "dataName"),
 				Name = GetContent(root, "Name"),
 				Essence = GetValidContent(root, "Essence", "Essence"),
 				Focus = GetValidContent(root, "Focus", "Focus"),
 				Stat = GetValidContent(root, "Stat", "Stat"),
-				//MoveType = currentPack + "." + GetContent(root, "MoveType", "MoveType"),
+				MoveType = GetValidClass(GetContent(root, "MoveType", "MoveType")),
 				MoveProps = root["MoveProps"]
 			};
-
-			string moveType = GetContent(root, "MoveType", "MoveType");
-
-			if (Type.GetType(Constants.CorePackName + "." + moveType) != null)
-				data.MoveType = Constants.CorePackName + "." + moveType;
-			else if (Type.GetType(currentPack + "." + moveType) != null)
-				data.MoveType = currentPack + "." + moveType;
-			else
-				Debug.LogWarningFormat("MoveType given for {0} does not exist in pack namespace.", data.dataName);
-
+			
 			Database<MoveData>.Add(data);
 		}
 
@@ -104,10 +99,16 @@ namespace Generic
 		{
 			BeastData data = new BeastData
 			{
-				dataName = currentPack + "." + GetContent(root, "dataName"),
+				dataName = currentPack.Name + "." + GetContent(root, "dataName"),
 				Name = GetContent(root, "Name"),
 				Description = GetContent(root, "Description"),
+				ModelClass = GetValidClass(GetContent(root["Model"], "class", "BeastModel")),
+				ModelProps = root["Model"]["modelProps"]
 			};
+
+			//Adjust texture path for model
+			foreach (XmlNode node in data.ModelProps["textures"].ChildNodes)
+				node.InnerText = Path.Combine(currentPack.TexturesFolder, "Beasts", node.InnerText);
 
 			//Essences
 			data.Essences = new List<string>();
@@ -137,7 +138,7 @@ namespace Generic
 				try
 				{
 					//TODO: Allow specifying in the XML what namespace to use
-					data.LearnSet.Add(int.Parse(GetContent(node, "level")), currentPack + "." + GetContent(node, "dataName"));
+					data.LearnSet.Add(int.Parse(GetContent(node, "level")), currentPack.Name + "." + GetContent(node, "dataName"));
 				}
 				catch (ArgumentException e)
 				{
@@ -162,6 +163,45 @@ namespace Generic
 		public static string GetValidContent(XmlNode node, string key, string prefix)
 		{
 			return Constants.GetValid(GetContent(node, key, prefix));
+		}
+
+		private static string FormatClassName(string ns, string cl)
+		{
+			return ns + "." + cl;
+		}
+
+		/// <summary>
+		/// Verify that the class exists in the given namespace
+		/// </summary>
+		/// <param name="ns"></param>
+		/// <param name="cl"></param>
+		/// <returns></returns>
+		private static Type GetClassFromName(string ns, string cl)
+		{
+			return GetClassFromString(FormatClassName(ns, cl));
+		}
+
+		private static Type GetClassFromString(string str)
+		{
+			return Type.GetType(str);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="cl"></param>
+		/// <returns></returns>
+		public static string GetValidClass(string cl)
+		{
+			Type t;
+
+			if ((t = GetClassFromName(currentPack.Name, cl)) != null)
+				return t.FullName;
+			else if ((t = GetClassFromName(Constants.CorePackName, cl)) != null)
+				return t.FullName;
+
+			Debug.LogWarningFormat("{0} does not exist within '{1}' namespace.", cl, currentPack.Name);
+			return null;
 		}
 	}
 }

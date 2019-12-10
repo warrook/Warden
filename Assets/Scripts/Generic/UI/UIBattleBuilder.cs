@@ -45,6 +45,12 @@ namespace Generic.UI
 
 			Ticker = OverlayObject.AddComponent<BattleTicker>();
 			Ticker.builder = this;
+
+			GameObject ribbon = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/UI/BattleRibbon"));
+			ribbon.transform.SetParent(OverlayObject.transform);
+			var ribbonTransform = ribbon.transform as RectTransform;
+			//Make vertical sizing fit the content instead
+			ribbonTransform.sizeDelta = new Vector2(Screen.width, 150f);
 		}
 
 		public void BuildMenu()

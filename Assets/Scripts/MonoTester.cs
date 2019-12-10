@@ -13,10 +13,17 @@ public class MonoTester : MonoBehaviour
     void Start()
     {
 		//pack = new ContentPack(new DirectoryInfo(Path.Combine(FileLocation.ContentDir.FullName, "Core" + Path.DirectorySeparatorChar)), "Core");
-		ContentLoader.Log();
+		//ContentLoader.Log();
 		ContentLoader.LoadPacks();
 
 		controller = new BattleController();
+
+		//var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+		//MeshRenderer r = quad.GetComponent<MeshRenderer>();
+		//r.material = Resources.Load<Material>("Beasts/Materials/mote_3");
+		////r.UpdateGIMaterials();
+		//quad.transform.localScale = new Vector3(r.material.mainTexture.width / 128, r.material.mainTexture.height / 128);
+
 		//pack.LoadData();
 
 		//Beast wisp = new Beast(Database<BeastData>.GetByName("WillOWisp"), 10);

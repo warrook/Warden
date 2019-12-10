@@ -24,6 +24,7 @@ namespace Warden
 		private void Start()
 		{
 			currentMenu = builder.Menu;
+			ForceUpdate();
 		}
 
 		private void Update()
@@ -36,6 +37,7 @@ namespace Warden
 				}
 				else if (currentMenu != builder.Menu || forceUpdate)
 				{
+					forceUpdate = false;
 					currentMenu = builder.Menu;
 					builder.BuildMenu();
 				}

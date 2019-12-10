@@ -24,12 +24,13 @@ namespace Generic
 
 		public static void LoadPacks()
 		{
+			Debug.Log("Loading content packs");
 			foreach (DirectoryInfo dir in directories)
 			{
-				Debug.LogFormat("Loading pack using directory \\{0}\\", dir.Name);
+				//Debug.LogFormat("Loading new pack using directory \\{0}\\", dir.Name);
 				Packs.Add(new ContentPack(dir));
 			}
-			Debug.LogWarningFormat("All entries in the database: ");
+			//Debug.LogWarningFormat("All entries in the database: ");
 			//Database<Warden.BeastData>.LogAll();
 			Constants.Player.SetDefault();
 		}

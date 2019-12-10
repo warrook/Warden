@@ -14,7 +14,7 @@ namespace Generic
 
 		public static void Add(T data)
 		{
-			Debug.LogFormat("Adding data {0} to database", data.dataName);
+			Debug.LogFormat("Adding data {0} to {1} database", data.dataName, typeof(T));
 			try
 			{
 				dataList.Add(data);
