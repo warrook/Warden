@@ -50,7 +50,7 @@ namespace Generic.UI
 			ribbon.transform.SetParent(OverlayObject.transform);
 			var ribbonTransform = ribbon.transform as RectTransform;
 			//Make vertical sizing fit the content instead
-			ribbonTransform.sizeDelta = new Vector2(Screen.width, 150f);
+			ribbonTransform.sizeDelta = new Vector2(Screen.width, Screen.height * 0.25f);
 		}
 
 		public void BuildMenu()

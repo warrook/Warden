@@ -29,8 +29,10 @@ namespace Warden
 
 		private void Update()
 		{
+			//Move to Coroutine?
 			if (controller.BattlePhase == BattlePhase.Waiting)
 			{
+				//Menuing
 				if (builder.Menu == BattleMenu.Busy)
 				{
 					//Don't do any menu thing.

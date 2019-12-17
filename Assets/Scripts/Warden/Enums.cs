@@ -22,16 +22,15 @@ namespace Warden
 
 	public enum BattlePhase
 	{
-		BattleStart,
+		BattleStart, //Do intro animations -- run once
 		RoundStart,
-		Waiting, //Waiting for the player
-		Movement,
 		TurnPre,
 		TurnUse,
 		TurnPost,
 		RoundEnd,
-		BattleEnd,
-		Death //May happen whenever
+		BattleEnd, //Run once
+		Waiting,
+		//Extra phases: Movement (switch) and Death
 	}
 
 	public enum BattleMenu

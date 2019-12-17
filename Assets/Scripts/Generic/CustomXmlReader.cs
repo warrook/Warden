@@ -108,7 +108,7 @@ namespace Generic
 
 			//Adjust texture path for model
 			foreach (XmlNode node in data.ModelProps["textures"].ChildNodes)
-				node.InnerText = Path.Combine(currentPack.TexturesFolder, "Beasts", node.InnerText);
+				node.InnerText = Path.Combine(currentPack.TexturesFolder, "Beasts", node.InnerText + ".png");
 
 			//Essences
 			data.Essences = new List<string>();

@@ -5,12 +5,13 @@
     <Name>Mote</Name>
     <Description>A glowing speck. Attracted to life.</Description>
     <Model>
-      <class>BasicGlow</class>
+      <class>FloatingGlow</class>
       <modelProps>
         <textures>
           <li>mote_1</li>
         </textures>
-        <color>#FFAC3D</color>
+        <color>255,172,61</color>
+        <intensity>0.2</intensity>
       </modelProps>
     </Model>
     <Essences>
@@ -47,12 +48,13 @@
     <Name>Wisp</Name>
     <Description>A distant torchlight, luring travelers to their doom.</Description>
     <Model>
-      <class>BasicGlow</class>
+      <class>FloatingGlow</class>
       <modelProps>
         <textures>
           <li>mote_2</li>
         </textures>
-        <color>#FFAC3D</color>
+        <color>255,172,61</color>
+        <intensity>0.6</intensity>
       </modelProps>
     </Model>
     <Essences>
@@ -89,12 +91,13 @@
     <Name>Fool's Flame</Name>
     <Description>A light like a campfire lures the unwary to a quick and wasting death.</Description>
     <Model>
-      <class>BasicGlow</class>
+      <class>FloatingGlow</class>
       <modelProps>
         <textures>
           <li>mote_3</li>
         </textures>
-        <color>#FFAC3D</color>
+        <color>255,172,61</color>
+        <intensity>1.1</intensity>
       </modelProps>
     </Model>
     <Essences>

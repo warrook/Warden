@@ -32,6 +32,7 @@ namespace Warden
 			{
 				enemies
 			};
+			AllyTeams = new List<Team>();
 			Intro = "Fight me";
 		}
 	}
