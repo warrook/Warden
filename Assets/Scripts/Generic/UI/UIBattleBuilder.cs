@@ -12,16 +12,25 @@ namespace Generic.UI
 {
 	public class UIBattleBuilder
 	{
-		public BattleMenu Menu = BattleMenu.Start;
+		private BattleMenu menu;
+		public BattleMenu Menu
+		{
+			get => menu;
+			set { menu = value; Build(); }
+		}
 
 		private BattleController controller;
 		public BattleController Controller => controller;
 
+		private BattleTicker ticker;
+		public BattleTicker Ticker => ticker;
+
 		private GameObject OverlayObject;
 		private GameObject ChoiceContainer;
-		private BattleTicker Ticker;
+		
 		private GameObject prefabButton;
 		private Canvas canvas;
+		private bool built = false;
 
 		private int Spacer => 70;
 
@@ -29,6 +38,7 @@ namespace Generic.UI
 		{
 			controller = battleController;
 			Initialize();
+			Menu = BattleMenu.Start;
 		}
 
 		private void Initialize()
@@ -43,14 +53,29 @@ namespace Generic.UI
 			ChoiceContainer = new GameObject("UI_ChoiceContainer");
 			ChoiceContainer.transform.SetParent(OverlayObject.transform);
 
-			Ticker = OverlayObject.AddComponent<BattleTicker>();
-			Ticker.builder = this;
+			ticker = OverlayObject.AddComponent<BattleTicker>();
+			ticker.builder = this;
 
 			GameObject ribbon = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/UI/BattleRibbon"));
 			ribbon.transform.SetParent(OverlayObject.transform);
 			var ribbonTransform = ribbon.transform as RectTransform;
 			//Make vertical sizing fit the content instead
 			ribbonTransform.sizeDelta = new Vector2(Screen.width, Screen.height * 0.25f);
+		}
+
+		public void Build()
+		{
+			if (controller.Going)
+			{
+
+			}
+			else
+			{
+				if (controller.BattlePhase == BattlePhase.Waiting)
+				{
+					BuildMenu();
+				}
+			}
 		}
 
 		public void BuildMenu()
@@ -144,14 +169,22 @@ namespace Generic.UI
 			return button;
 		}
 
+		/// <summary>
+		/// Checks if a message box already exists, and if it does, change its text to msg.
+		/// </summary>
+		/// <param name="msg"></param>
 		public void MessageBox(string msg)
 		{
-			//Controller.State = BattleController.Choice.Dialogue;
+			Transform t = OverlayObject.transform.Find("MessageBox");
+			if (t == null)
+			{
+				GameObject prefab = Resources.Load<GameObject>("Prefabs/UI/MessageBox");
+				GameObject MessageBox = GameObject.Instantiate(prefab, OverlayObject.transform);
+				MessageBox.name = "MessageBox";
+				t = MessageBox.transform;
+			}
 
-			GameObject prefab = Resources.Load<GameObject>("Prefabs/UI/MessageBox");
-			GameObject MessageBox = GameObject.Instantiate(prefab, OverlayObject.transform);
-			TextMeshProUGUI tmp = MessageBox.transform.Find("TextContent").GetComponent<TextMeshProUGUI>();
-			tmp.text = msg;
+			t.Find("TextContent").GetComponent<TextMeshProUGUI>().text = msg;
 		}
 
 		private void ClearChoiceContainer()

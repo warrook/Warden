@@ -11,6 +11,11 @@ namespace Warden
 	{
 		public static readonly string CorePackName = typeof(Beast).Namespace;
 
+		//Seconds
+		public static float WaitShort => 1f;
+		public static float WaitMedium => 2f;
+		public static float WaitLong => 4f;
+
 		public static readonly List<string> Stat = new List<string>()
 		{
 			"Stat_Power",

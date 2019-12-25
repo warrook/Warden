@@ -10,24 +10,10 @@ namespace Warden
 {
 	public class BeastModel_Basic : BeastModel
 	{
-		public override void Setup(XmlNode props, GameObject holder)
+		public override void Setup(Beast beast, GameObject holder)
 		{
-			base.Setup(props, holder);
+			base.Setup(beast, holder);
 
-			//GameObject leaf = new GameObject(this.GetType().Name);
-			//leaf.transform.SetParent(Pivot.transform);
-			//SpriteRenderer r = leaf.AddComponent<SpriteRenderer>();
-
-			//byte[] bytes = System.IO.File.ReadAllBytes(Textures.First().FullName);
-			//Texture2D texture = new Texture2D(1, 1);
-			//texture.LoadImage(bytes);
-			//r.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-			////r.material = Resources.Load<Material>("Outline");
-
-
-			//leaf.transform.localScale = new Vector3(0.5f, 0.5f);
-			//leaf.transform.localPosition = new Vector3(0f, (r.sprite.texture.height * 0.25f) * 0.01f); //100 pixels per unit
-			//Leaves.Add(leaf);
 			GameObject leaf = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			leaf.transform.SetParent(Pivot.transform);
 			leaf.name = this.GetType().Name;

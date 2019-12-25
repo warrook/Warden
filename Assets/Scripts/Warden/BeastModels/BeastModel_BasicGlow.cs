@@ -10,9 +10,9 @@ namespace Warden
 {
 	public class BeastModel_BasicGlow : BeastModel_Basic
 	{
-		public override void Setup(XmlNode props, GameObject holder)
+		public override void Setup(Beast beast, GameObject holder)
 		{
-			base.Setup(props, holder);
+			base.Setup(beast, holder);
 		}
 	}
 }

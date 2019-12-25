@@ -17,6 +17,7 @@ namespace Generic.UI
 		private void Awake()
 		{
 			radius = gameObject.transform.Find("Background").GetComponent<Image>().mainTexture.width * 0.5f;
+			//Debug.Log(OnChoose.Target);
 		}
 
 		public void OnPointerClick(PointerEventData eventData)

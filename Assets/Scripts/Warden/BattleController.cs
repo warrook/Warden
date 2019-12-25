@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,24 @@ namespace Warden
 	/// </summary>
 	public class BattleController
 	{
-		private BattlePhase battlePhaseInternal;
-		public BattlePhase BattlePhase => battlePhaseInternal;
+		private BattlePhase battlePhase;
+		public BattlePhase BattlePhase
+		{
+			get => battlePhase;
+			set
+			{
+				battlePhase = value;
+				Proceed();
+			}
+		}
+
+		private bool go;
+		public bool Going => go;
 
 		private BattleInfo battleInfo;
 		private GameObject battleHolder;
 		private UIBattleBuilder ui;
+		private BattleTicker ticker;
 
 		private List<MoveType> activeMoves = new List<MoveType>(); //Active MoveType objects going on.
 		private List<MoveType> waitingMoves = new List<MoveType>(); //MoveType objects that have been selected and are waiting to be added to Active on the next phase
@@ -29,13 +42,14 @@ namespace Warden
 		public BattleController()
 		{
 			var team = new Team()
-				.AddByName("Warden.FoolsFlame", 5)
+				.AddByName("Warden.Wisp", 5)
 				.AddByName("Warden.FoolsFlame", 6);
 			battleInfo = new BattleInfo(team);
 			ui = new UIBattleBuilder(this);
-			battlePhaseInternal = BattlePhase.BattleStart;
+			ticker = ui.Ticker;
 			battleInfo.numEnemyBeastsPerTeam = 2;
-			EnterBeasts();
+			BattlePhase = BattlePhase.BattleStart;
+			//EnterBeasts();
 		}
 
 		public BattleController(BattleInfo info)
@@ -44,22 +58,62 @@ namespace Warden
 			ui = new UIBattleBuilder(this);
 		}
 
-		public void Proceed()
+		public void Go() => go = true;
+		public void Wait() => go = false;
+
+		private IEnumerator WaitFor(float sec)
 		{
-			
+			go = false;
+			yield return new WaitForSeconds(sec);
+			go = true;
 		}
 
+		private IEnumerator WaitForAnd(float sec, BattlePhase phase)
+		{
+			yield return WaitFor(sec);
+			BattlePhase = phase;
+		}
+
+		private void Proceed() //Might need to be public?
+		{
+			switch (BattlePhase)
+			{
+				case BattlePhase.BattleStart:
+					ui.MessageBox("BEGIN");
+					EnterBeasts();
+					ticker.StartCoroutine(WaitForAnd(Constants.WaitMedium + 1f, BattlePhase.RoundStart));
+					//BattlePhase = BattlePhase.RoundStart;
+					break;
+				case BattlePhase.RoundStart:
+					ui.MessageBox("START ROUND");
+					ticker.StartCoroutine(WaitForAnd(Constants.WaitMedium, BattlePhase.Waiting));
+					//BattlePhase = BattlePhase.Waiting;
+					break;
+				case BattlePhase.Waiting:
+					ui.MessageBox("CHOOSE!");
+					Wait();
+					ui.Build();
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Make the models for each beast, 
+		/// </summary>
 		private void EnterBeasts()
 		{
 			battleHolder = new GameObject("BattleHolder");
 			int beasts = 0;
+			Vector3 pos;
+			Transform model;
 
 			//Player beasts
 			for (int i = 0; i < BattleInfo.numPlayerBeasts; i++)
 			{
 				beasts++;
-				MakeModel(Constants.Player.GetTeam().Members[i], false, battleHolder)
-					.localPosition = new Vector3(-1f - (1.5f * beasts), 0, -0.02f * beasts);
+				pos = new Vector3(-1f - (1.5f * beasts), 0, -0.02f * beasts);
+				model = BuildModel(Constants.Player.GetTeam().Members[i], battleHolder, pos);
+				ticker.StartCoroutine(EnterBeast(model, pos));
 			}
 
 			//Ally beasts
@@ -69,8 +123,9 @@ namespace Warden
 					for (int j = 0; j < BattleInfo.numAllyBeastsPerTeam; j++)
 					{
 						beasts++;
-						MakeModel(BattleInfo.AllyTeams[i].Members[j], false, battleHolder)
-							.localPosition = new Vector3(-1f - (1.5f * beasts), 0, -0.02f * beasts);
+						pos = new Vector3(-1f - (1.5f * beasts), 0, -0.02f * beasts);
+						model = BuildModel(BattleInfo.AllyTeams[i].Members[j], battleHolder, pos);
+						ticker.StartCoroutine(EnterBeast(model, pos));
 					}
 						
 			}
@@ -84,10 +139,16 @@ namespace Warden
 					for (int j = 0; j < BattleInfo.numEnemyBeastsPerTeam; j++)
 					{
 						beasts++;
-						MakeModel(BattleInfo.EnemyTeams[i].Members[j], true, battleHolder)
-							.localPosition = new Vector3(1f + (1.5f * beasts), 0, -0.02f * beasts);
+						pos = new Vector3(1f + (1.5f * beasts), 0, -0.02f * beasts);
+						model = BuildModel(BattleInfo.EnemyTeams[i].Members[j], battleHolder, pos);
+						ticker.StartCoroutine(EnterBeast(model, pos));
 					}
 			}
+		}
+
+		private void SwitchBeast(Beast beastOut, Beast beastIn)
+		{
+
 		}
 
 		//Move done moves to the ending list
@@ -121,13 +182,41 @@ namespace Warden
 			Debug.Log(string.Join(",", waitingMoves));
 		}
 
-		private Transform MakeModel(Beast beast, bool isEnemy, GameObject parent)
+		private Transform BuildModel(Beast beast, GameObject parent, Vector3 targetPosition)
 		{
+			int dir = Math.Sign(0 + targetPosition.x);
 			BeastData data = beast.data;
 			GameObject pivot = new GameObject(data.dataName, Type.GetType(data.ModelClass));
 			pivot.transform.SetParent(parent.transform);
-			pivot.GetComponent<BeastModel>().Setup(data.ModelProps, parent);
+			pivot.GetComponent<BeastModel>().Setup(beast, parent);
+			pivot.transform.position = new Vector3(targetPosition.x + (6f * dir), targetPosition.y, targetPosition.z);
+
+			//Flip depending on direction (this might not work well for complex models)
+			pivot.transform.eulerAngles = new Vector3(0, (90f * (1 + -dir)), 0);
+
 			return pivot.transform;
+		}
+
+		private IEnumerator EnterBeast(Transform model, Vector3 targetPosition)
+		{
+			Wait();
+
+			float elapsedTime = 0;
+			float startX = model.position.x;
+			float endX = targetPosition.x;
+			
+			while (elapsedTime < Constants.WaitMedium + 1f/*Vector3.Distance(model.position, targetPosition) >= 0.01f*/)
+			{
+				model.position = new Vector3(Mathf.Lerp(model.position.x, endX, elapsedTime * 0.04f), targetPosition.y, targetPosition.z);
+				elapsedTime += Time.deltaTime;
+				//Debug.Log(elapsedTime);
+				yield return new WaitForEndOfFrame();
+			}
+			model.position = targetPosition;
+
+			Go();
+			yield return null;
+			
 		}
 	}
 }

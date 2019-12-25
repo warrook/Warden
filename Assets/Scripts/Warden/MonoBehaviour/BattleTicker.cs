@@ -25,25 +25,30 @@ namespace Warden
 		{
 			currentMenu = builder.Menu;
 			ForceUpdate();
+			controller.Go();
+			//StartCoroutine(controller.WaitFor(Constants.WaitMedium));
 		}
 
 		private void Update()
 		{
+			//controller.Update();
+			//builder.Build(); //Run once
+
 			//Move to Coroutine?
-			if (controller.BattlePhase == BattlePhase.Waiting)
-			{
-				//Menuing
-				if (builder.Menu == BattleMenu.Busy)
-				{
-					//Don't do any menu thing.
-				}
-				else if (currentMenu != builder.Menu || forceUpdate)
-				{
-					forceUpdate = false;
-					currentMenu = builder.Menu;
-					builder.BuildMenu();
-				}
-			}
+			//if (controller.BattlePhase == BattlePhase.Waiting)
+			//{
+			//	//Menuing
+			//	if (builder.Menu == BattleMenu.Busy)
+			//	{
+			//		//Don't do any menu thing.
+			//	}
+			//	else if (currentMenu != builder.Menu || forceUpdate)
+			//	{
+			//		forceUpdate = false;
+			//		currentMenu = builder.Menu;
+			//		builder.BuildMenu();
+			//	}
+			//}
 		}
 	}
 }

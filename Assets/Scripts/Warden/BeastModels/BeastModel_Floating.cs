@@ -10,9 +10,9 @@ namespace Warden
 {
 	public class BeastModel_Floating : BeastModel_Basic
 	{
-		public override void Setup(XmlNode props, GameObject holder)
+		public override void Setup(Beast beast, GameObject holder)
 		{
-			base.Setup(props, holder);
+			base.Setup(beast, holder);
 			SpriteRenderer r = Leaves.First().GetComponent<SpriteRenderer>();
 			Leaves.First().transform.localPosition = new Vector3(0f, 128 * 0.01f); //100 pixels per unit
 		}
