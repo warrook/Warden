@@ -38,12 +38,13 @@ namespace Warden
 		private List<MoveType> endingMoves = new List<MoveType>(); //MoveType objects that are done, need to call OnEnd(), and be deleted
 
 		public BattleInfo BattleInfo => battleInfo;
+		private int turnActions;
 
 		public BattleController()
 		{
 			var team = new Team()
-				.AddByName("Warden.Wisp", 5)
-				.AddByName("Warden.FoolsFlame", 6);
+				.AddNewByName("Warden.Wisp", 5)
+				.AddNewByName("Warden.FoolsFlame", 6);
 			battleInfo = new BattleInfo(team);
 			ui = new UIBattleBuilder(this);
 			ticker = ui.Ticker;
@@ -58,14 +59,23 @@ namespace Warden
 			ui = new UIBattleBuilder(this);
 		}
 
-		public void Go() => go = true;
-		public void Wait() => go = false;
+		public void Go()
+		{
+			Debug.Log("Go");
+			go = true;
+		}
+
+		public void Wait()
+		{
+			Debug.Log("Wait");
+			go = false;
+		}
 
 		private IEnumerator WaitFor(float sec)
 		{
-			go = false;
+			Wait();
 			yield return new WaitForSeconds(sec);
-			go = true;
+			Go();
 		}
 
 		private IEnumerator WaitForAnd(float sec, BattlePhase phase)
@@ -76,6 +86,13 @@ namespace Warden
 
 		private void Proceed() //Might need to be public?
 		{
+			if (ui.Menu == BattleMenu.Busy && BattlePhase == BattlePhase.Waiting)
+			{
+				BattlePhase = BattlePhase.TurnPre;
+				return;
+			}
+
+			//TODO: Modify for allowing things to be true during a phase separate from phase transitions
 			switch (BattlePhase)
 			{
 				case BattlePhase.BattleStart:
@@ -91,8 +108,12 @@ namespace Warden
 					break;
 				case BattlePhase.Waiting:
 					ui.MessageBox("CHOOSE!");
+					turnActions = BattleInfo.maxActions;
 					Wait();
-					ui.Build();
+					ui.Menu = BattleMenu.Start;
+					break;
+				default:
+					ui.MessageBox("BEHOLD! " + BattlePhase);
 					break;
 			}
 		}
@@ -127,7 +148,7 @@ namespace Warden
 						model = BuildModel(BattleInfo.AllyTeams[i].Members[j], battleHolder, pos);
 						ticker.StartCoroutine(EnterBeast(model, pos));
 					}
-						
+
 			}
 
 			beasts = 0;
@@ -146,9 +167,20 @@ namespace Warden
 			}
 		}
 
-		private void SwitchBeast(Beast beastOut, Beast beastIn)
+		public void SwitchBeast(Team team, Beast beastOut, Beast beastIn)
 		{
+			if (team.Switch(beastOut, beastIn))
+			{
+				BeastModel[] models = battleHolder.transform.GetComponentsInChildren<BeastModel>();
 
+				Transform modelOut = models.Where(b => b.Beast == beastOut).First().gameObject.transform;
+				Vector3 pos = modelOut.position;
+
+				Transform modelIn = BuildModel(beastIn, battleHolder, pos);
+
+				ticker.StartCoroutine(SwapBeast(modelOut, modelIn));
+				turnActions--;
+			}
 		}
 
 		//Move done moves to the ending list
@@ -189,7 +221,7 @@ namespace Warden
 			GameObject pivot = new GameObject(data.dataName, Type.GetType(data.ModelClass));
 			pivot.transform.SetParent(parent.transform);
 			pivot.GetComponent<BeastModel>().Setup(beast, parent);
-			pivot.transform.position = new Vector3(targetPosition.x + (6f * dir), targetPosition.y, targetPosition.z);
+			pivot.transform.position = new Vector3(targetPosition.x, targetPosition.y, targetPosition.z);
 
 			//Flip depending on direction (this might not work well for complex models)
 			pivot.transform.eulerAngles = new Vector3(0, (90f * (1 + -dir)), 0);
@@ -199,24 +231,54 @@ namespace Warden
 
 		private IEnumerator EnterBeast(Transform model, Vector3 targetPosition)
 		{
-			Wait();
+			//Debug.Log("Enter called");
 
 			float elapsedTime = 0;
-			float startX = model.position.x;
+			model.position = new Vector3(model.position.x + (6f * Math.Sign(0 + targetPosition.x)), model.position.y, model.position.z); //this is just weird
 			float endX = targetPosition.x;
-			
-			while (elapsedTime < Constants.WaitMedium + 1f/*Vector3.Distance(model.position, targetPosition) >= 0.01f*/)
+
+			while (elapsedTime < Constants.WaitMedium + 1f)
 			{
 				model.position = new Vector3(Mathf.Lerp(model.position.x, endX, elapsedTime * 0.04f), targetPosition.y, targetPosition.z);
 				elapsedTime += Time.deltaTime;
-				//Debug.Log(elapsedTime);
 				yield return new WaitForEndOfFrame();
 			}
-			model.position = targetPosition;
 
-			Go();
+			model.position = targetPosition;
 			yield return null;
-			
+		}
+
+		private IEnumerator ExitBeast(Transform modelOut, Transform modelIn)
+		{
+			modelIn.gameObject.SetActive(false);
+			float elapsedTime = 0;
+			Vector3 pos = modelOut.position;
+
+			float mini;
+
+			while (elapsedTime < Constants.WaitShort)
+			{
+				mini = Mathf.Lerp(modelOut.localScale.x, 0, elapsedTime / Constants.WaitShort);
+				modelOut.localScale = new Vector3(mini, mini, mini);
+				elapsedTime += Time.deltaTime;
+				yield return new WaitForEndOfFrame();
+			}
+
+			GameObject.Destroy(modelOut.gameObject);
+			modelIn.gameObject.SetActive(true);
+			yield return null;
+		}
+
+		private IEnumerator SwapBeast(Transform modelOut, Transform modelIn)
+		{
+			if (!Going)
+			{
+				Go();
+				Vector3 pos = modelOut.position;
+				yield return ExitBeast(modelOut, modelIn);
+				yield return EnterBeast(modelIn, pos);
+			}
+			Wait();
 		}
 	}
 }

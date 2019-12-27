@@ -16,7 +16,7 @@ namespace Generic.UI
 		public BattleMenu Menu
 		{
 			get => menu;
-			set { menu = value; Build(); }
+			set { menu = value; Debug.Log("Set menu to " + value); Build(); }
 		}
 
 		private BattleController controller;
@@ -132,8 +132,9 @@ namespace Generic.UI
 				Vector3 pos = new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i);
 				MakeButton(pos, move.Name, "UI/BattleChoice_Fight", () =>
 				{
+					Menu = BattleMenu.Busy;
 					Debug.Log("Hello there, I am " + move.dataName);
-					Controller.AddMove(move, Constants.Player.GetTeam().First());
+					Controller.AddMove(move, Constants.Player.GetTeam().First);
 				});
 				i++;
 			}
@@ -150,9 +151,10 @@ namespace Generic.UI
 				Vector3 pos = new Vector3(Spacer, (Screen.height - Spacer) - Spacer * i);
 				MakeButton(pos, beast.Name + " - " + beast.Level, "UI/BattleChoice_Run", () =>
 				{
+					Menu = BattleMenu.Busy;
 					Debug.Log(beast.Name + ": I have been picked!");
-					Constants.Player.GetTeam().MoveToFront(beast);
-					Menu = BattleMenu.Start;
+					Controller.SwitchBeast(Constants.Player.GetTeam(), Constants.Player.GetTeam().First, beast);
+					
 				});
 
 				i++;

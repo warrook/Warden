@@ -13,35 +13,49 @@ namespace Warden
 	public class Team
 	{
 		public List<Beast> Members = new List<Beast>();
-
-		public Beast First()
-		{
-			return Members.First();
-		}
+		
+		public bool Contains(Beast beast) => Members.Contains(beast);
+		public Beast First => Members.First();
 
 		/// <summary>
-		/// Adds beast to team by dataName (with pack name)
+		/// Adds a new beast to team by dataName (with pack name)
 		/// </summary>
 		/// <param name="dataName"></param>
 		/// <param name="level"></param>
 		/// <returns></returns>
-		public Team AddByName(string dataName, int level)
+		public Team AddNewByName(string dataName, int level)
 		{
-			AddByData(Database<BeastData>.GetByName(dataName), level);
+			AddNewByData(Database<BeastData>.GetByName(dataName), level);
 			return this;
 		}
 
 		/// <summary>
-		/// Adds beast to team by BeastData object
+		/// Adds a new beast to team by BeastData object
 		/// </summary>
 		/// <param name="data"></param>
 		/// <param name="level"></param>
 		/// <returns></returns>
-		public Team AddByData(BeastData data, int level)
+		public Team AddNewByData(BeastData data, int level)
 		{
 			Members.Add(new Beast(data, level));
 			return this;
 		}
+
+		/// <summary>
+		/// Add an existing beast to team
+		/// </summary>
+		/// <param name="beast"></param>
+		/// <returns></returns>
+		public Team Add(Beast beast)
+		{
+			if (!Contains(beast))
+				Members.Add(beast);
+			else
+				UnityEngine.Debug.Log("Tried to add duplicate beast to team");
+			return this;
+		}
+
+		//Add
 
 		/// <summary>
 		/// Moves the given beast to the front of the team.
@@ -49,6 +63,7 @@ namespace Warden
 		/// <param name="beast"></param>
 		public void MoveToFront(Beast beast)
 		{
+			UnityEngine.Debug.LogFormat("Moving {0} to front of team", beast.data.dataName);
 			if (Members.Contains(beast))
 			{
 				Members.Remove(beast);
@@ -57,9 +72,10 @@ namespace Warden
 		}
 
 		//Untested
-		public void Switch(Beast beastOut, Beast beastIn)
+		public bool Switch(Beast beastOut, Beast beastIn)
 		{
-			if (Members.Contains(beastOut) && Members.Contains(beastIn))
+			//UnityEngine.Debug.LogFormat("Switching out {0} for {1}", beastOut.data.dataName, beastIn.data.dataName);
+			if (!beastIn.Equals(beastOut) && Contains(beastOut) && Contains(beastIn))
 			{
 				int moveTo = Members.IndexOf(beastOut);
 				int moveFrom = Members.IndexOf(beastIn);
@@ -68,6 +84,12 @@ namespace Warden
 				Members.Remove(beastIn);
 				Members.Insert(moveTo, beastIn);
 				Members.Insert(moveFrom, beastOut);
+				return true;
+			}
+			else
+			{
+				UnityEngine.Debug.LogFormat("Failed to switch {0} with {1}", beastOut, beastIn);
+				return false;
 			}
 		}
 	}

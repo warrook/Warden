@@ -17,6 +17,7 @@ namespace Warden
 		public int numPlayerBeasts = 1;
 		public int numAllyBeastsPerTeam = 1;
 		public int numEnemyBeastsPerTeam = 1;
+		public int maxActions = 1;
 
 		public List<Team> EnemyTeams;
 		public List<Team> AllyTeams;

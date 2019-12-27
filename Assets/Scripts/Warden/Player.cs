@@ -21,8 +21,8 @@ namespace Warden
 		public Player SetDefault()
 		{
 			Team = new Team()
-				.AddByName("Warden.Mote", 5)
-				.AddByName("Warden.Mote", 2);
+				.AddNewByName("Warden.Wisp", 5)
+				.AddNewByName("Warden.Mote", 2);
 			return this;
 		}
 	}
